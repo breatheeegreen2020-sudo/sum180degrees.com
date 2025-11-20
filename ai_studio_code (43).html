@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triangle Angle Sum Theorem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Deep Emerald Background simulating subsurface glow */
+            background-color: #064e3b; /* emerald-900 base */
+            background-image: 
+                /* Soft light hitting from top-left */
+                radial-gradient(circle at 0% 0%, rgba(52, 211, 153, 0.4) 0%, transparent 50%),
+                /* Deep internal glow from bottom-right */
+                radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.3) 0%, transparent 50%),
+                /* Ambient scattering in the center */
+                radial-gradient(circle at 50% 50%, rgba(6, 95, 70, 0) 0%, rgba(2, 44, 34, 0.8) 100%);
+            background-attachment: fixed;
+            color: #ecfdf5; /* emerald-50 */
+        }
+
+        canvas {
+            touch-action: none;
+            cursor: crosshair;
+        }
+        
+        /* Glass morphism updated for darker theme */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-panel-dark {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="w-full p-6 text-center relative z-10">
+        <h1 class="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-200 to-teal-100 mb-2 drop-shadow-sm">Triangle Angle Sum Theorem</h1>
+        <p class="text-emerald-200/80 max-w-2xl mx-auto text-sm md:text-base font-light tracking-wide">
+            Drag the glowing nodes. Observe how the geometry shifts while the total sum remains eternal at <strong>180°</strong>.
+        </p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center justify-center w-full px-4 pb-8 relative z-10">
+        
+        <!-- Canvas Container -->
+        <div class="relative w-full max-w-4xl aspect-[16/9] md:aspect-[2/1] glass-panel rounded-2xl overflow-hidden border border-emerald-400/30 shadow-[0_0_50px_rgba(16,185,129,0.15)]">
+            <canvas id="triangleCanvas" class="w-full h-full block"></canvas>
+            
+            <!-- Floating instruction -->
+            <div class="absolute top-4 left-4 bg-emerald-900/40 backdrop-blur-md border border-emerald-500/30 px-4 py-1.5 rounded-full text-xs text-emerald-100 font-medium shadow-lg pointer-events-none select-none">
+                ✨ Drag points A, B, or C
+            </div>
+        </div>
+
+        <!-- Math & Results Panel -->
+        <div class="mt-6 w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <!-- Angle A -->
+            <div class="glass-panel rounded-xl p-4 flex flex-col items-center justify-center hover:bg-white/5 transition-colors duration-300">
+                <span class="text-emerald-300 font-bold text-lg mb-1 opacity-80">Angle A</span>
+                <span id="valA" class="text-4xl font-bold text-white drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]">60°</span>
+            </div>
+
+            <!-- Angle B -->
+            <div class="glass-panel rounded-xl p-4 flex flex-col items-center justify-center hover:bg-white/5 transition-colors duration-300">
+                <span class="text-cyan-300 font-bold text-lg mb-1 opacity-80">Angle B</span>
+                <span id="valB" class="text-4xl font-bold text-white drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]">60°</span>
+            </div>
+
+            <!-- Angle C -->
+            <div class="glass-panel rounded-xl p-4 flex flex-col items-center justify-center hover:bg-white/5 transition-colors duration-300">
+                <span class="text-pink-300 font-bold text-lg mb-1 opacity-80">Angle C</span>
+                <span id="valC" class="text-4xl font-bold text-white drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]">60°</span>
+            </div>
+        </div>
+
+        <!-- The Grand Equation -->
+        <div class="mt-6 glass-panel-dark w-full max-w-4xl px-8 py-5 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4 transform transition-all hover:scale-[1.01] shadow-lg border-t border-emerald-500/20">
+            <div class="text-emerald-400/70 text-sm font-medium uppercase tracking-widest">The Equation</div>
+            <div class="flex items-center gap-3 text-2xl md:text-3xl font-bold font-mono">
+                <span id="eqA" class="text-emerald-300 drop-shadow-md">60°</span>
+                <span class="text-emerald-600">+</span>
+                <span id="eqB" class="text-cyan-300 drop-shadow-md">60°</span>
+                <span class="text-emerald-600">+</span>
+                <span id="eqC" class="text-pink-300 drop-shadow-md">60°</span>
+                <span class="text-emerald-500">=</span>
+                <span class="text-white bg-emerald-500/20 px-4 py-1 rounded-lg border border-emerald-400/50 shadow-[0_0_15px_rgba(16,185,129,0.3)]">180°</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="p-4 text-center text-xs text-emerald-300/40 relative z-10">
+        <p>Interactive Geometry Demo • Built for learning</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('triangleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // State
+        let width, height;
+        const points = {
+            A: { x: 0, y: 0, color: '#34d399' }, // Emerald-400
+            B: { x: 0, y: 0, color: '#22d3ee' }, // Cyan-400
+            C: { x: 0, y: 0, color: '#f472b6' }  // Pink-400
+        };
+        
+        let isDragging = false;
+        let draggedPoint = null;
+        const pointRadius = 12;
+        const hoverRadius = 30;
+
+        const dom = {
+            valA: document.getElementById('valA'),
+            valB: document.getElementById('valB'),
+            valC: document.getElementById('valC'),
+            eqA: document.getElementById('eqA'),
+            eqB: document.getElementById('eqB'),
+            eqC: document.getElementById('eqC')
+        };
+
+        function resize() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            width = canvas.width;
+            height = canvas.height;
+            
+            if (points.A.x === 0) {
+                points.A.x = width * 0.5;
+                points.A.y = height * 0.25;
+                points.B.x = width * 0.25;
+                points.B.y = height * 0.75;
+                points.C.x = width * 0.75;
+                points.C.y = height * 0.75;
+            }
+            draw();
+        }
+
+        window.addEventListener('resize', resize);
+
+        function distance(p1, p2) {
+            return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+        }
+
+        function calculateAngles() {
+            const a = distance(points.B, points.C);
+            const b = distance(points.A, points.C);
+            const c = distance(points.A, points.B);
+
+            let angleA = Math.acos((b*b + c*c - a*a) / (2*b*c)) * (180 / Math.PI);
+            let angleB = Math.acos((a*a + c*c - b*b) / (2*a*c)) * (180 / Math.PI);
+            let angleC = 180 - angleA - angleB;
+
+            if (isNaN(angleA)) angleA = 0;
+            if (isNaN(angleB)) angleB = 0;
+            if (isNaN(angleC)) angleC = 0;
+
+            return { A: Math.round(angleA), B: Math.round(angleB), C: Math.round(angleC) };
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            const angles = calculateAngles();
+            updateDOM(angles);
+
+            // 1. Glowing Triangle Connection lines
+            ctx.beginPath();
+            ctx.moveTo(points.A.x, points.A.y);
+            ctx.lineTo(points.B.x, points.B.y);
+            ctx.lineTo(points.C.x, points.C.y);
+            ctx.closePath();
+
+            // Fill with subtle gradient
+            const gradient = ctx.createLinearGradient(points.A.x, points.A.y, points.B.x, points.B.y);
+            gradient.addColorStop(0, 'rgba(52, 211, 153, 0.1)');
+            gradient.addColorStop(1, 'rgba(34, 211, 238, 0.1)');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // Glowing stroke
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(16, 185, 129, 0.8)';
+            ctx.stroke();
+            ctx.shadowBlur = 0; // Reset shadow
+
+            // 2. Angle Arcs
+            drawAngleArc(points.A, points.B, points.C, points.A.color, angles.A);
+            drawAngleArc(points.B, points.A, points.C, points.B.color, angles.B);
+            drawAngleArc(points.C, points.A, points.B, points.C.color, angles.C);
+
+            // 3. Vertices (Glowing Orbs)
+            drawVertex(points.A, 'A', points.A.color);
+            drawVertex(points.B, 'B', points.B.color);
+            drawVertex(points.C, 'C', points.C.color);
+        }
+
+        function drawVertex(point, label, color) {
+            // Outer glow
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, pointRadius + 4, 0, Math.PI * 2);
+            ctx.fillStyle = color + '33'; // 20% opacity
+            ctx.fill();
+
+            // Inner Core
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, pointRadius, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = color;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Ring
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Label
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = '600 14px Inter';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, point.x, point.y);
+        }
+
+        function drawAngleArc(center, p1, p2, color, angleVal) {
+            const radius = 45;
+            const startAngle = Math.atan2(p1.y - center.y, p1.x - center.x);
+            const endAngle = Math.atan2(p2.y - center.y, p2.x - center.x);
+
+            ctx.beginPath();
+            ctx.moveTo(center.x, center.y);
+            ctx.arc(center.x, center.y, radius, startAngle, endAngle, checkCounterClockwise(startAngle, endAngle, center, p1, p2));
+            ctx.closePath();
+            
+            ctx.fillStyle = color + '22'; // Very transparent
+            ctx.fill();
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+        
+        function checkCounterClockwise(start, end, center, p1, p2) {
+            const crossProduct = (p1.x - center.x) * (p2.y - center.y) - (p1.y - center.y) * (p2.x - center.x);
+            return crossProduct > 0; 
+        }
+
+        function updateDOM(angles) {
+            dom.valA.textContent = angles.A + '°';
+            dom.valB.textContent = angles.B + '°';
+            dom.valC.textContent = angles.C + '°';
+
+            dom.eqA.textContent = angles.A + '°';
+            dom.eqB.textContent = angles.B + '°';
+            dom.eqC.textContent = angles.C + '°';
+            
+            dom.eqA.style.color = points.A.color;
+            dom.eqB.style.color = points.B.color;
+            dom.eqC.style.color = points.C.color;
+        }
+
+        // Input Handling (same logic, updated cursor style)
+        function getMousePos(evt) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+            const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function isHit(pos, point) {
+            return Math.sqrt((pos.x - point.x) ** 2 + (pos.y - point.y) ** 2) < hoverRadius;
+        }
+
+        function handleStart(evt) {
+            const pos = getMousePos(evt);
+            if (isHit(pos, points.A)) draggedPoint = 'A';
+            else if (isHit(pos, points.B)) draggedPoint = 'B';
+            else if (isHit(pos, points.C)) draggedPoint = 'C';
+
+            if (draggedPoint) {
+                isDragging = true;
+                canvas.style.cursor = 'grabbing';
+            }
+        }
+
+        function handleMove(evt) {
+            const pos = getMousePos(evt);
+
+            if (isDragging && draggedPoint) {
+                evt.preventDefault();
+                const padding = pointRadius + 5;
+                let newX = Math.max(padding, Math.min(width - padding, pos.x));
+                let newY = Math.max(padding, Math.min(height - padding, pos.y));
+                
+                points[draggedPoint].x = newX;
+                points[draggedPoint].y = newY;
+                draw();
+            } else {
+                let hovering = isHit(pos, points.A) || isHit(pos, points.B) || isHit(pos, points.C);
+                canvas.style.cursor = hovering ? 'grab' : 'crosshair';
+            }
+        }
+
+        function handleEnd() {
+            isDragging = false;
+            draggedPoint = null;
+            canvas.style.cursor = 'grab';
+        }
+
+        canvas.addEventListener('mousedown', handleStart);
+        canvas.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
+
+        canvas.addEventListener('touchstart', handleStart, { passive: false });
+        canvas.addEventListener('touchmove', handleMove, { passive: false });
+        window.addEventListener('touchend', handleEnd);
+
+        setTimeout(resize, 100);
+    </script>
+</body>
+</html>
